@@ -21,10 +21,10 @@ export default class List extends Component {
   }
 
   componentDidMount(){
-         this.getBlogRequest(page);
+        this.getBlogRequest(page);
   }
 
-   getBlogRequest(p){
+  getBlogRequest(p){
     if(this.state.isLoading){
       return;
     }
@@ -84,11 +84,14 @@ export default class List extends Component {
   //显示加载
    renderLoadingView()
      {
-         return (<View style={styles.container} >
-                 <Text>Loading blogs......</Text>
-             </View>
-         );
-     }
+         return (
+        <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 80}]}
+        size="large"
+        />
+        );
+   }
      //跳转详情页
      _pressRow(blogId){
         const { navigator } = this.props;
@@ -147,6 +150,13 @@ var swidth = Dimensions.get("window").width;
 var sheight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
+  centering: {
+    flex:1,
+    flexDirection:'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
   topView: {
     flex:1,
     flexDirection:'row',

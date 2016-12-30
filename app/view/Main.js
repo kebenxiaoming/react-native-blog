@@ -1,8 +1,9 @@
 import React, { Component} from 'react';
-import { View, ScrollView,StyleSheet,Text,Image,Navigator } from 'react-native';
+import { View, ScrollView,StyleSheet,Text,Image,Navigator,Alert} from 'react-native';
 
 import List from './List';
 
+import MyStorage from '../storage/Local';
 
 //获取屏幕的宽高
 var Dimensions = require('Dimensions'); 
@@ -13,7 +14,6 @@ export default class Login extends Component {
 	constructor(props) {
     super(props);
   }
-
      //点击跳转详情navigator
   _pressDetailButton() {
         const { navigator } = this.props;
@@ -75,64 +75,5 @@ const styles = StyleSheet.create({
   backgroundImage:{
     width:swidth,
     height:sheight
-  },
-  mainView: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  formView:{
-    flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height:0.8*sheight,
-  },
-  formTitleView: {
-    width:200,
-    height: 50, 
-    backgroundColor: 'powderblue'
-  },
-  formTitleText: {
-    padding: 10, 
-    fontSize: 20,
-    textAlign:'center'
-  },
-  nameView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'skyblue'
-  },
-  passView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'steelblue'
-  },
-  submitView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'powderblue',
-    flexDirection: 'row'
-  },
-  buttonStyle:{
-    flex:2,
-    padding: 10, 
-    fontSize: 20,
-    textAlign:'center'
-  },
-  bottomView:{
-    flex:2,
-    flexDirection: 'row',
-    height:0.2*sheight,
-    justifyContent: 'space-between',
-    alignItems:'center',
-  },
-  bottonLeftText:{
-    textAlign:'left',
-    width:0.3*{swidth}
-  },
-  bottonRightText:{
-    textAlign:'right',
-    width:0.3*{swidth}
   },
 });

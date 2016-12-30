@@ -1,6 +1,3 @@
-import React, { Component} from 'react';
-import {Alert} from 'react-native';
-
 const baseURL = "http://kebenxiaoming.info";
 
 function fetchAction(...props) {
@@ -27,6 +24,16 @@ export default {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body:'id='+blogId,
+    });
+  },
+  goLogin(username,password){
+    var apiPort = "index.php?g=api&c=Login&a=index";
+    return fetchAction(`${baseURL}/${apiPort}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body:'username='+username+'&password='+password,
     });
   }
 };

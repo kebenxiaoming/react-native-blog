@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { View, StyleSheet,WebView,Text,Image, Alert,Navigator } from 'react-native';
+import { View, StyleSheet,WebView,ActivityIndicator,Text,Image, Alert,Navigator } from 'react-native';
 
 import BaseRequestApi from '../connect/BaseRequestApi';
 
@@ -69,10 +69,13 @@ export default class Detail extends Component {
   //显示加载
   renderLoadingView()
   {
-         return (<View style={styles.container} >
-                 <Text>Loading blogs detail......</Text>
-             </View>
-         );
+         return (
+        <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 80}]}
+        size="large"
+        />
+        );
   }
   render() {
 
@@ -96,6 +99,13 @@ var swidth = Dimensions.get("window").width;
 var sheight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
+  centering: {
+    flex:1,
+    flexDirection:'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
   topView: {
     flex:1,
     flexDirection:'row',

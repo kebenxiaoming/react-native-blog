@@ -5,6 +5,10 @@ import Register from './Register';
 import Forget from './Forget';
 import Main from './Main';
 
+import MyStorage from '../storage/Local';
+
+import BaseRequestApi from '../connect/BaseRequestApi';
+
 export default class Login extends Component {
 	constructor(props) {
     super(props);
@@ -26,11 +30,22 @@ export default class Login extends Component {
     }
 
     //点击跳转navigator
-  _pressOkButton() {
+    _pressOkButton() {
+        //点击确认后请求
+        //先判断值是否存在
+        if(this.state.username==""||this.state.password==""){
+           Alert.alert(
+            '提示信息',
+            '请输入用户名密码后再提交！！',
+            );
+           return;
+        }
+        this._goLogin(this.state.username,this.state.password);
+    }
+
+    //登陆成功之后跳转
+    _redirectMain(){
         const { navigator } = this.props;
-        //为什么这里可以取得 props.navigator?请看上文:
-        //<Component {...route.params} navigator={navigator} />
-        //这里传递了navigator作为props
         if(navigator) {
             navigator.push({
                 name: 'Main',
@@ -38,6 +53,42 @@ export default class Login extends Component {
             })
         }
     }
+    //保存用户信息
+    _saveLocal(){
+        var userinfo={username:this.state.username,password:this.state.password};
+        var userinfostr=JSON.stringify(userinfo);
+
+        MyStorage.saveData("userinfo",userinfostr);
+    }
+
+    _goLogin(username,password){
+    try {
+        BaseRequestApi.goLogin(username,password)
+        .then((response) => {
+           let status=response.status;
+           let data = response.data;
+           let msg=response.msg;
+           if(status==1){
+            this._saveLocal();
+            Alert.alert(
+            '提示信息',
+            msg+"，正在跳转...",
+            );
+            this._redirectMain();
+            }else{
+              Alert.alert(
+              '提示信息',
+              msg,
+              );
+          }
+        })
+      } catch(e) {
+        Alert.alert(
+            '提示信息',
+            JSON.stringify(e),
+          );
+      }
+  }
 
     //点击跳转navigator
   _pressLButton() {
