@@ -1,4 +1,4 @@
-# react-native-demo
+# react-native-blog
 一个react-native的demo，还在学习中</br>
 在项目目录下运行:</br>
 npm install</br>
