@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { View, StyleSheet,Text,Image, Alert,TextInput,Navigator } from 'react-native';
+import { View, StyleSheet,ActivityIndicator,Modal,Button,TouchableHighlight,Text,Image, Alert,TextInput,Navigator,AsyncStorage } from 'react-native';
 
 import Register from './Register';
 import Forget from './Forget';
@@ -9,10 +9,20 @@ import MyStorage from '../storage/Local';
 
 import BaseRequestApi from '../connect/BaseRequestApi';
 
+global.userinfo="";
+
 export default class Login extends Component {
 	constructor(props) {
     super(props);
-    this.state = {username: '',password:''};
+    this.state = {username:"",password:"",modalVisible: false};
+  }
+
+  componentDidMount(){
+    //MyStorage.autoLogin();
+  }
+  //修改modal显示状态
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   //点击跳转navigator
@@ -32,14 +42,10 @@ export default class Login extends Component {
     //点击跳转navigator
     _pressOkButton() {
         //点击确认后请求
-        //先判断值是否存在
         if(this.state.username==""||this.state.password==""){
-           Alert.alert(
-            '提示信息',
-            '请输入用户名密码后再提交！！',
-            );
-           return;
+          alert("请输入后再提交!");return;
         }
+        this.setModalVisible(true);
         this._goLogin(this.state.username,this.state.password);
     }
 
@@ -54,11 +60,9 @@ export default class Login extends Component {
         }
     }
     //保存用户信息
-    _saveLocal(){
-        var userinfo={username:this.state.username,password:this.state.password};
-        var userinfostr=JSON.stringify(userinfo);
-
-        MyStorage.saveData("userinfo",userinfostr);
+    _saveLocal(username,password,token){
+        var userinfo={username:username,password:password,token:token};
+        MyStorage.saveData("userinfo",JSON.stringify(userinfo));
     }
 
     _goLogin(username,password){
@@ -69,11 +73,8 @@ export default class Login extends Component {
            let data = response.data;
            let msg=response.msg;
            if(status==1){
-            this._saveLocal();
-            Alert.alert(
-            '提示信息',
-            msg+"，正在跳转...",
-            );
+            this._saveLocal(username,password,data.token);
+            this.setModalVisible(!this.state.modalVisible);
             this._redirectMain();
             }else{
               Alert.alert(
@@ -103,9 +104,31 @@ export default class Login extends Component {
     }
 
   render() {
-
+      
     return (
       <Image style={styles.backgroundImage} source={require('../assets/images/login.jpg')} resizeMode={'contain'}>
+      <Modal
+          animationType={"slide"}
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+      <View style={styles.centering}>
+          <TouchableHighlight onPress={() => {
+              this.setModalVisible(!this.state.modalVisible)
+            }}>
+          <View>
+          <Text style={{fontSize:15,color:'white'}}>正在登陆,请稍后...</Text>
+          <ActivityIndicator
+          animating={true}
+          style={styles.indicatorStyle}
+          color='white'
+          size="large"
+           />
+          </View>
+           </TouchableHighlight>
+         </View>
+      </Modal>
       <View style={styles.mainView}>
       <View style={styles.formView}>
       <View style={styles.formTitleView}><Text style={styles.formTitleText}>登录</Text></View>
@@ -121,7 +144,7 @@ export default class Login extends Component {
         </View>
         <View style={styles.submitView}>
         <Text style={styles.buttonStyle} onPress={this._pressOkButton.bind(this)}>确认</Text></View>
-      </View> 
+      </View>
       <View style={styles.bottomView}>
       <Text style={{textAlign:'left',
     width:0.3*swidth}} onPress={this._pressLButton.bind(this)} >
@@ -145,7 +168,19 @@ var swidth = Dimensions.get("window").width;
 var sheight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-
+  centering: {
+    flex:1,
+    flexDirection:'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:"rgba(0,0,0,0.6)"
+  },
+  indicatorStyle:{
+    flex:1,
+    flexDirection:'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   backgroundImage:{
     width:swidth,
     height:sheight

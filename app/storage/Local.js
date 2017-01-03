@@ -11,6 +11,9 @@ export default {
                     if (error){
                         alert('存值失败:',error);
                     }
+                    if(key=="userinfo"){
+                        global.userinfo=value;
+                    }
                 }
             );
         } catch (error){
@@ -25,11 +28,19 @@ export default {
                     if (error){
                         alert('取值失败:'+error);
                     }
+                    if(key=="userinfo"){
+                        global.userinfo=result;
+                    }
+                    alert(global.userinfo);
                 }
             )
         }catch(error){
             alert('失败'+error);
         }
+    },
+    //自动登录之用
+    autoLogin(){
+      this.getValue("userinfo");
     },
     removeData(key){
         try {
