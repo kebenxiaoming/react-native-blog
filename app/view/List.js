@@ -4,15 +4,14 @@ import { View,TouchableHighlight,ListView,Alert,ActivityIndicator,StyleSheet,Tex
 import BaseRequestApi from '../connect/BaseRequestApi';
 import Detail from './Detail';
 
-var page=1;
-var totalBlogs=new Array();
-var first=true;
-
 export default class List extends Component {
 
 	constructor(props) {
     super(props);
     this.state ={
+      first:true,
+      page:1,
+      totalBlogs:new Array(),
       isLoading:false,
       dataSource: new ListView.DataSource({
                  rowHasChanged: (row1, row2) => row1 !== row2,
@@ -21,44 +20,47 @@ export default class List extends Component {
   }
 
   componentDidMount(){
-        this.getBlogRequest(page);
+        this.getBlogRequest(this.state.page);
   }
 
   getBlogRequest(p){
     if(this.state.isLoading){
       return;
     }
-    if(!first){
-        page=page+1;
+    if(!this.state.first){
+        this.state.page=this.state.page+1;
     }else{
-        page=p;
+        this.state.page=p;
     }
     try {
-        BaseRequestApi.getBlogs(page)
+        BaseRequestApi.getBlogs(this.state.page)
         .then((response) => {
            let status=response.status;
            let data = response.data;
            let msg=response.msg;
            if(status==1){
-            page=data.nowpage;
+            this.state.page=data.nowpage;
             for(let i=0;i<data.articles.length;i++){
-                totalBlogs.push(data.articles[i]);
+                this.state.totalBlogs.push(data.articles[i]);
             }
-           this.setState({
-             dataSource: this.state.dataSource.cloneWithRows(totalBlogs),
-             isLoading:true
+           
+            if(this.state.first){
+            this.setState({
+             dataSource: this.state.dataSource.cloneWithRows(this.state.totalBlogs),
+             isLoading:true,
+             first:false,
             });
-            if(first){
-            first=false;
+            }else{
+            this.setState({
+             dataSource: this.state.dataSource.cloneWithRows(this.state.totalBlogs),
+             isLoading:true,
+            });
             }
             }else{
               Alert.alert(
               '提示信息',
               msg,
               );
-              this.setState({
-              isLoading:false
-            });
           }
         })
       } catch(e) {
@@ -72,24 +74,27 @@ export default class List extends Component {
       }
   }
   _loadmore(){
-    if(first){
+    if(this.state.first){
         return;
     }
     this.setState({
          isLoading:false
         });
-    this.getBlogRequest(page);
+    this.getBlogRequest(this.state.page);
     
   }
   //显示加载
    renderLoadingView()
      {
          return (
+          <View style={styles.centering}>
+          <Text>正在加载...</Text>
         <ActivityIndicator
         animating={true}
         style={[styles.centering, {height: 80}]}
         size="large"
         />
+        </View>
         );
    }
      //跳转详情页
@@ -125,7 +130,7 @@ export default class List extends Component {
      }
 
   render() {
-    if (!this.state.isLoading&&first) {
+    if (!this.state.isLoading&&this.state.first) {
              return this.renderLoadingView();
     }
     return (

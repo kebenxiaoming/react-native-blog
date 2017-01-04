@@ -1,6 +1,8 @@
 import React, { Component} from 'react';
 import {AsyncStorage} from 'react-native';
 
+import BaseRequestApi from '../connect/BaseRequestApi';
+
 export default {
     saveData(key,value){
         try {
@@ -31,7 +33,6 @@ export default {
                     if(key=="userinfo"){
                         global.userinfo=result;
                     }
-                    alert(global.userinfo);
                 }
             )
         }catch(error){
@@ -39,16 +40,33 @@ export default {
         }
     },
     //自动登录之用
-    autoLogin(){
-      this.getValue("userinfo");
+    autoLogin(nowObject){
+      try {
+            AsyncStorage.getItem(
+                "userinfo",
+                (error,result)=>{
+                    if (error){
+                        alert('取值失败:'+error);
+                    }
+                    if(result!=undefined&&result!=""){
+                    nowObject.setModalVisible(true);
+                    global.userinfo=result;
+                    var resObj=JSON.parse(result);
+                    BaseRequestApi.autoLogin(resObj.username,resObj.password,resObj.token,nowObject);
+                    }
+                }
+            )
+        }catch(error){
+            alert('失败'+error);
+        }
     },
     removeData(key){
         try {
             AsyncStorage.removeItem(
                 key,
                 (error)=>{
-                    if(!error){
-                        alert('移除成功');
+                    if(error){
+                        alert('移除失败');
                     }
                 }
             )

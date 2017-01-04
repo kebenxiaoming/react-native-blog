@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { View, StyleSheet,ActivityIndicator,Modal,Button,TouchableHighlight,Text,Image, Alert,TextInput,Navigator,AsyncStorage } from 'react-native';
+import { View, StyleSheet,ActivityIndicator,Modal,TouchableHighlight,Text,Image, Alert,TextInput,Navigator,AsyncStorage } from 'react-native';
 
 import Register from './Register';
 import Forget from './Forget';
@@ -14,23 +14,26 @@ global.userinfo="";
 export default class Login extends Component {
 	constructor(props) {
     super(props);
-    this.state = {username:"",password:"",modalVisible: false};
+    this.state = {username:"",password:"",modalVisible: false,islogin:this.props.login};
   }
 
   componentDidMount(){
-    //MyStorage.autoLogin();
+    if(!this.state.islogin){
+      MyStorage.autoLogin(this);
+    }
   }
   //修改modal显示状态
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
+  //修改登录状态
+  setLoginState(flag){
+     this.setState({islogin: flag});
+  }
 
   //点击跳转navigator
   _pressRButton() {
         const { navigator } = this.props;
-        //为什么这里可以取得 props.navigator?请看上文:
-        //<Component {...route.params} navigator={navigator} />
-        //这里传递了navigator作为props
         if(navigator) {
             navigator.push({
                 name: 'Register',
@@ -61,6 +64,7 @@ export default class Login extends Component {
     }
     //保存用户信息
     _saveLocal(username,password,token){
+        this.setLoginState(true);
         var userinfo={username:username,password:password,token:token};
         MyStorage.saveData("userinfo",JSON.stringify(userinfo));
     }
@@ -75,20 +79,27 @@ export default class Login extends Component {
            if(status==1){
             this._saveLocal(username,password,data.token);
             this.setModalVisible(!this.state.modalVisible);
-            this._redirectMain();
             }else{
+              this.setModalVisible(!this.state.modalVisible);
               Alert.alert(
               '提示信息',
               msg,
               );
           }
         })
-      } catch(e) {
+      } catch(e) { 
+        this.setModalVisible(!this.state.modalVisible);
         Alert.alert(
             '提示信息',
             JSON.stringify(e),
           );
       }
+  }
+  //退出
+  logout(){
+    global.userinfo="";
+    this.setLoginState(false);
+    MyStorage.removeData("userinfo");
   }
 
     //点击跳转navigator
@@ -104,6 +115,31 @@ export default class Login extends Component {
     }
 
   render() {
+    if(this.state.islogin){
+        return (
+          <Image style={styles.backgroundImage} source={require('../assets/images/login.jpg')} resizeMode={'contain'}>
+          <View style={styles.mainView}>
+          <View style={styles.formView}>
+          <View style={styles.formTitleView}><Text
+          style={{height: 50,textAlign:'center'}}
+          >
+          已经登录喽
+          </Text>
+          </View>
+          <View style={styles.nameView}><Text
+          style={{height: 50,textAlign:'center'}}
+          >
+          test
+          </Text>
+          </View>
+          <View style={styles.submitView}>
+          <Text style={styles.buttonStyle} onPress={this.logout.bind(this)}>退出</Text>
+          </View>
+          </View>
+          </View>
+          </Image>  
+          );
+    }
       
     return (
       <Image style={styles.backgroundImage} source={require('../assets/images/login.jpg')} resizeMode={'contain'}>
@@ -114,9 +150,6 @@ export default class Login extends Component {
           onRequestClose={() => {alert("Modal has been closed.")}}
       >
       <View style={styles.centering}>
-          <TouchableHighlight onPress={() => {
-              this.setModalVisible(!this.state.modalVisible)
-            }}>
           <View>
           <Text style={{fontSize:15,color:'white'}}>正在登陆,请稍后...</Text>
           <ActivityIndicator
@@ -126,24 +159,26 @@ export default class Login extends Component {
           size="large"
            />
           </View>
-           </TouchableHighlight>
          </View>
       </Modal>
       <View style={styles.mainView}>
       <View style={styles.formView}>
-      <View style={styles.formTitleView}><Text style={styles.formTitleText}>登录</Text></View>
         <View style={styles.nameView}><TextInput
           style={{height: 50}}
+          placeholder='用户名'
           onChangeText={(username) => this.setState({username})}
         />
         </View>
         <View style={styles.passView}><TextInput
           style={{height: 50}}
+          placeholder='密码'
           onChangeText={(password) => this.setState({password})}
+          secureTextEntry={true}
           />
         </View>
         <View style={styles.submitView}>
-        <Text style={styles.buttonStyle} onPress={this._pressOkButton.bind(this)}>确认</Text></View>
+        <Text style={styles.buttonStyle} onPress={this._pressOkButton.bind(this)}>登录</Text>
+        </View>
       </View>
       <View style={styles.bottomView}>
       <Text style={{textAlign:'left',
@@ -200,7 +235,6 @@ const styles = StyleSheet.create({
   formTitleView: {
     width:200,
     height: 50, 
-    backgroundColor: 'powderblue'
   },
   formTitleText: {
     padding: 10, 
@@ -208,20 +242,62 @@ const styles = StyleSheet.create({
     textAlign:'center'
   },
   nameView:{
-    width:200,
+    width:0.7*swidth,
     height: 50, 
-    backgroundColor: 'skyblue'
+    //设置圆角程度
+    borderRadius: 18,
+    //设置边框的颜色
+    borderColor: 'green',
+    //设置边框的宽度
+    borderWidth: 1,
+    //内边距
+    paddingLeft: 10,
+    paddingRight: 10,
+    //外边距
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    //设置相对父控件居中
+    alignSelf: 'center',
   },
   passView:{
-    width:200,
+    width:0.7*swidth,
     height: 50, 
-    backgroundColor: 'steelblue'
+    //设置圆角程度
+    borderRadius: 18,
+    //设置边框的颜色
+    borderColor: 'green',
+    //设置边框的宽度
+    borderWidth: 1,
+    //内边距
+    paddingLeft: 10,
+    paddingRight: 10,
+    //外边距
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    //设置相对父控件居中
+    alignSelf: 'center',
   },
   submitView:{
-    width:200,
+    width:0.5*swidth,
     height: 50, 
-    backgroundColor: 'powderblue',
-    flexDirection: 'row'
+    marginTop:100,
+    //设置圆角程度
+    borderRadius: 18,
+    //设置边框的颜色
+    borderColor: 'blue',
+    //设置边框的宽度
+    borderWidth: 1,
+    //内边距
+    paddingLeft: 10,
+    paddingRight: 10,
+    //外边距
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    //设置相对父控件居中
+    alignSelf: 'center',
   },
   buttonStyle:{
     flex:2,

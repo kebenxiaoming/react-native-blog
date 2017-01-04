@@ -2,18 +2,22 @@ import React, { Component } from 'react';
 import { AppRegistry,Navigator} from 'react-native';
 
 
-import Login from './app/view/Login';
+import Main from './app/view/Main';
 
 class LoginScreen extends Component {
 	
  	render() {
-            let defaultName = 'Login';
-            let defaultComponent = Login;
+            let defaultName = 'Main';
+            let defaultComponent = Main;
             return (
             <Navigator
               initialRoute={{ name: defaultName, component: defaultComponent }}
               configureScene={(route) => {
-                return Navigator.SceneConfigs.HorizontalSwipeJump;
+              	if(route.name=='Login'){
+                return Navigator.SceneConfigs.FloatFromLeft;
+            	}else{
+            		return Navigator.SceneConfigs.FloatFromRight;
+            	}
               }}
               renderScene={(route, navigator) => {
                 let Component = route.component;

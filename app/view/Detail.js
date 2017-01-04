@@ -51,9 +51,6 @@ export default class Detail extends Component {
               '提示信息',
               msg,
               );
-              this.setState({
-              isLoading:false
-            });
           }
         })
       } catch(e) {
@@ -82,12 +79,14 @@ export default class Detail extends Component {
     if (!this.state.isLoading) {
              return this.renderLoadingView();
     }
-
+    //加上一段css
+    let cssstr="<style>img{max-width:100%;display:block;margin:0 auto;}</style>";
+    this.state.detail=cssstr+this.state.detail;
     return (
           <View style={{flex:1,flexDirection:'column'}}>
           <View style={styles.topView}><Text style={{textAlign:'center'}}>{this.state.title}</Text></View>
           <View style={styles.descView}><Text style={{textAlign:'center'}}>{this.state.desc}</Text></View>
-          <View style={styles.detailView} ><WebView style={styles.webviewCss} source={{html:this.state.detail}} scalesPageToFit={true} /></View>
+          <View style={styles.detailView} ><WebView style={styles.webviewCss} source={{html:this.state.detail}} scalesPageToFit={true} automaticallyAdjustContentInsets={true} /></View>
           </View>
     )
   }
