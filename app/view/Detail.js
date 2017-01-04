@@ -79,12 +79,12 @@ export default class Detail extends Component {
     if (!this.state.isLoading) {
              return this.renderLoadingView();
     }
-    //加上一段css
+    //加上一段css,限制图片宽度
     let cssstr="<style>img{max-width:100%;display:block;margin:0 auto;}</style>";
     this.state.detail=cssstr+this.state.detail;
     return (
           <View style={{flex:1,flexDirection:'column'}}>
-          <View style={styles.topView}><Text style={{textAlign:'center'}}>{this.state.title}</Text></View>
+          <View style={styles.topView}><Text style={{textAlign:'center'}} adjustsFontSizeToFit={true}>{this.state.title}</Text></View>
           <View style={styles.descView}><Text style={{textAlign:'center'}}>{this.state.desc}</Text></View>
           <View style={styles.detailView} ><WebView style={styles.webviewCss} source={{html:this.state.detail}} scalesPageToFit={true} automaticallyAdjustContentInsets={true} /></View>
           </View>

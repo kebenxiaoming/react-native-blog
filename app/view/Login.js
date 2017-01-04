@@ -14,7 +14,7 @@ global.userinfo="";
 export default class Login extends Component {
 	constructor(props) {
     super(props);
-    this.state = {username:"",password:"",modalVisible: false,islogin:this.props.login};
+    this.state = {username:this.props.username,password:"",modalVisible: false,islogin:this.props.login};
   }
 
   componentDidMount(){
@@ -63,9 +63,9 @@ export default class Login extends Component {
         }
     }
     //保存用户信息
-    _saveLocal(username,password,token){
+    _saveLocal(username,password,token,tokentime){
         this.setLoginState(true);
-        var userinfo={username:username,password:password,token:token};
+        let userinfo={username:username,password:password,token:token,tokentime:tokentime};
         MyStorage.saveData("userinfo",JSON.stringify(userinfo));
     }
 
@@ -77,7 +77,7 @@ export default class Login extends Component {
            let data = response.data;
            let msg=response.msg;
            if(status==1){
-            this._saveLocal(username,password,data.token);
+            this._saveLocal(username,password,data.token,data.token_time);
             this.setModalVisible(!this.state.modalVisible);
             }else{
               this.setModalVisible(!this.state.modalVisible);
@@ -129,7 +129,7 @@ export default class Login extends Component {
           <View style={styles.nameView}><Text
           style={{height: 50,textAlign:'center'}}
           >
-          test
+          {this.state.username}
           </Text>
           </View>
           <View style={styles.submitView}>
@@ -147,7 +147,7 @@ export default class Login extends Component {
           animationType={"slide"}
           transparent={true}
           visible={this.state.modalVisible}
-          onRequestClose={() => {alert("Modal has been closed.")}}
+          onRequestClose={() => {this.setModalVisible(false)}}
       >
       <View style={styles.centering}>
           <View>

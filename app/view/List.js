@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { View,TouchableHighlight,ListView,Alert,ActivityIndicator,StyleSheet,Text,Image,Navigator } from 'react-native';
+import { View,TouchableHighlight,Modal,ListView,Alert,ActivityIndicator,StyleSheet,Text,Image,Navigator } from 'react-native';
 
 import BaseRequestApi from '../connect/BaseRequestApi';
 import Detail from './Detail';
@@ -61,6 +61,9 @@ export default class List extends Component {
               '提示信息',
               msg,
               );
+              this.setState({
+              isLoading:false
+              });
           }
         })
       } catch(e) {
@@ -69,7 +72,7 @@ export default class List extends Component {
             JSON.stringify(e),
           );
         this.setState({
-         isLoading:false
+          isLoading:false
         });
       }
   }
@@ -78,7 +81,7 @@ export default class List extends Component {
         return;
     }
     this.setState({
-         isLoading:false
+         isLoading:false,
         });
     this.getBlogRequest(this.state.page);
     
@@ -135,13 +138,13 @@ export default class List extends Component {
     }
     return (
           <View style={{flex:1,flexDirection:'column'}}>
-          <View style={styles.topView}><Text style={{textAlign:'center'}}>博客列表</Text></View>
+          <View style={styles.topView}><Text style={{textAlign:'center',fontSize:22}}>博客列表</Text></View>
           <ListView
                  dataSource={this.state.dataSource}
                  renderRow={this.renderBlog.bind(this)}
                  style={styles.listView}
                  onEndReached={this._loadmore.bind(this)}
-                 onEndReachedThreshold={0}
+                 onEndReachedThreshold={111}
              />
              </View>
     )
@@ -220,38 +223,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  formView:{
-    flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height:0.8*sheight,
-  },
-  formTitleView: {
-    width:200,
-    height: 50, 
-    backgroundColor: 'powderblue'
-  },
-  formTitleText: {
-    padding: 10, 
-    fontSize: 20,
-    textAlign:'center'
-  },
-  nameView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'skyblue'
-  },
-  passView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'steelblue'
-  },
-  submitView:{
-    width:200,
-    height: 50, 
-    backgroundColor: 'powderblue',
-    flexDirection: 'row'
   },
   buttonStyle:{
     flex:2,

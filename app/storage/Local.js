@@ -52,7 +52,7 @@ export default {
                     nowObject.setModalVisible(true);
                     global.userinfo=result;
                     var resObj=JSON.parse(result);
-                    BaseRequestApi.autoLogin(resObj.username,resObj.password,resObj.token,nowObject);
+                    BaseRequestApi.autoLogin(resObj.username,resObj.password,resObj.tokentime,nowObject);
                     }
                 }
             )

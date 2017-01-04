@@ -36,22 +36,24 @@ export default {
       body:'username='+username+'&password='+password,
     });
   },
-  autoLogin(username,password,token,nowObject){
-    var apiPort = "index.php?g=api&c=Login&a=checkToken";
+  autoLogin(username,password,tokentime,nowObject){
     nowObject.setModalVisible(false);
     nowObject.setLoginState(true);
-
-    try {
-        BaseRequestApi.goLogin(username,password)
+    nowObject.setState({username:username});
+    let now=Date.parse(new Date()); 
+    if((tokentime+2*60*60)*1000<now){
+      //token过期重新登录
+      try {
+        this.goLogin(username,password)
         .then((response) => {
            let status=response.status;
            let data = response.data;
            let msg=response.msg;
            if(status==1){
-            this._saveLocal(username,password,data.token);
-            this.setModalVisible(!this.state.modalVisible);
+            nowObject._saveLocal(username,password,data.token,data.token_time);
+            nowObject.setModalVisible(!nowObject.state.modalVisible);
             }else{
-              this.setModalVisible(!this.state.modalVisible);
+              nowObject.setModalVisible(!nowObject.state.modalVisible);
               Alert.alert(
               '提示信息',
               msg,
@@ -59,18 +61,12 @@ export default {
           }
         })
       } catch(e) { 
-        this.setModalVisible(!this.state.modalVisible);
+        nowObject.setModalVisible(!nowObject.state.modalVisible);
         Alert.alert(
             '提示信息',
             JSON.stringify(e),
           );
       }
-    // return fetchAction(`${baseURL}/${apiPort}`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded',
-    //   },
-    //   body:'username='+username+'&password='+password,
-    // });
+    }
   }
 };

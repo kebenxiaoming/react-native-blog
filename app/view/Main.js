@@ -32,8 +32,10 @@ export default class Main extends Component {
   _pressLoginButton(){
     if(global.userinfo!=""){
       isLogin=true;
+      username=JSON.parse(global.userinfo).username;
     }else{
       isLogin=false;
+      username="";
     }
     const { navigator } = this.props;
         if(navigator) {
@@ -43,6 +45,7 @@ export default class Main extends Component {
                 component: Login,
                 params:{  
                     login:isLogin,  
+                    username:username
                 }  
             })
         }
